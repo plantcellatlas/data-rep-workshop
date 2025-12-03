@@ -70,7 +70,21 @@ Several metadata schemas exist for single-cell
 - COPO (singlecellschemas.org)
 - Annotare
 
-Metadata is very important! How should we keep track of everything?
+</font>
+
+## OK can I analyze my data now?!
+<font size="4">
+
+Not so fast.
+
+- What happens if metadata changes?
+
+  * new samples
+  * additional context you forgot to include
+  * re-run of sequencing
+
+Any change in metadata / data sources will impact resulting code. How can 
+you keep track of it all?
 
 </font>
 
@@ -80,6 +94,7 @@ Metadata is very important! How should we keep track of everything?
 <img src=https://git-scm.com/book/ms/v2/images/local.png alt="drawing" width="400"/>
 
 - Tracking changes in code
+- Tracking changes in data / metadata
 - Sharing and managing those changes with others
 - Reverting code when errors are introduced
 
