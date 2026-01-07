@@ -1,0 +1,67 @@
+---
+title: 'PCA Data Reproducibility Workshop: Containers'
+author: "Andrew Farmer"
+date: "2025-04-17"
+output: ioslides_presentation
+---
+
+<style>
+.forceBreak { -webkit-column-break-after: always; break-after: column; }
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Outline
+In this workshop, we will:
+
+- Introduce containers and explain why they're useful in the context of reproducible data science
+- Introduce specific container technologies: Docker and Apptainer/Singularity
+- Demonstrate some basic single-cell analyses using containers, both directly and through a workflow engine (nextflow)
+
+## What is a container/image?
+- Analogy with growth chambers for standardizing environments: your code's genotype may be perfectly replicable (e.g. git clone) but that doesn't mean the phenotype will be the same everywhere!
+- "worked on my machine" in software development also applies to analysis 
+- build files ensure reproducibility of image (ie the environment in which your process will execute)
+- isolation of containers from each other allows potentially conflicting versions to coexist in parallel worlds on the same host (e.g. Seurat v4 vs v5 and compatibility with tools like loupeR)
+
+## What aspects of environment might impact reproducibility?
+- host operating system
+- software versions
+- dependencies
+- user environment (PATH, LD_LIBRARY_PATH, R_LIBS, alias, etc.)
+- different containerization frameworks take different approaches to how much isolation from the host system is provided by default
+
+## What about conda/modules?
+- not sure I want to touch this, but we can see what other think.
+
+## Images: Dockerfiles and Image Repositories
+- Dockerfiles use a "layering" approach to facilitate caching of build componenets
+- initial layer is the base image onto which you'll add your application-specific pieces; official base images for many language/frameworks (e.g. Python/R)
+- Docker engine runs as a "daemon" and manages access to images and containers
+- dockerhub/quay.io/https://depot.galaxyproject.org/
+- GitHub maintains a container registry that can be incorporated into software builds using Github Actions
+
+## Using containers on HPC systems: Singularity
+- High performance computing (HPC) clusters are typically multi-user managed by dedicated system administrators
+- Often docker will not be enabled on such systems due to security issues with some privileged operations
+- Singularity was developed specifically for running in such environments, without use of a daemon process
+- Images are stores as files and can easily be copied from one system to another (e.g. if you don't want to put your images in a centralized registry for "pull-based" access)
+
+## Nextflow and containers
+<img src=https://raw.githubusercontent.com/nf-core/scrnaseq/4.0.0/docs/images/scrnaseq_pipeline_V3.0-metro_clean.png alt="drawing" width="400"/>
+https://nf-co.re/scrnaseq/4.0.0/
+includes cellbender option so can discuss --nv for singularity
+
+  
+## Live Demonstration!
+
+Now that we know some high-level things about containers, let's get started using them!
+
+First, using the standard "hello world" to get a basic feel for how they work, using Docker on a laptop and Singularity on an HPC server.
+
+Then, we'll use the nextflow-based pipeline (nf-core/scrnaseq) which will use containers behind the scenes on our behalf to run some basic single-cell analytics.
+
+Finally, we'll do some add-on analysis using both the images pulled onto our system by the workflow as well as an image we built ourselves.
