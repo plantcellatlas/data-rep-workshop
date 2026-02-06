@@ -2,3 +2,4 @@
 .local/
 .config
 .cache
+.Rproj.user
