@@ -70,7 +70,7 @@ Data reproducibility starts with *metadata* -- documenting how your
 experimental samples were generated.
 
 ## What is metadata?
-<font size="4">
+<font size="5">
 
 Metadata is data used to describe other data.
 
@@ -89,7 +89,7 @@ Several metadata schemas exist for single-cell
 </font>
 
 ## OK can I analyze my data now?!
-<font size="4">
+<font size="5">
 
 Not so fast.
 
@@ -208,8 +208,7 @@ A typical workflow:
 
 ## Step 1: Create an Issue
 
-<div class="columns-2">
-<font size="4">
+<font size="5">
 On GitHub, create a new issue to:
 
 - Document bugs or problems
@@ -223,7 +222,6 @@ Issues can be:
 - Labeled for organization (e.g., bug, enhancement, documentation)
 
 </font>
-</div>
 
 ## Step 2: Create a Branch
 
@@ -240,6 +238,7 @@ git checkout -b feature/add-cell-qc
 ```
 
 Benefits:
+
 - Main branch stays stable while you work
 - Multiple team members can work on different features simultaneously
 - Easy to abandon changes if needed
@@ -286,7 +285,7 @@ git add src/analysis.R
 Stage all changes:
 
 ```
-git add .
+git add -A
 ```
 
 Check what's staged:
@@ -304,6 +303,7 @@ git commit -m "Add cell QC thresholds to sample metadata"
 ```
 
 Good commit messages:
+
 - Start with a verb: "Add", "Fix", "Update", "Remove"
 - Be specific about what changed
 - Keep it concise but informative
@@ -332,6 +332,7 @@ On GitHub, create a **pull request** (PR) to:
 - Discuss implementation details
 
 PR benefits:
+
 - Documentation of design decisions
 - Code review and quality control
 - Opportunity for feedback before merging
@@ -350,33 +351,47 @@ Result: Your changes are now in the main branch, available to all collaborators.
 
 ## The Complete Workflow Diagram
 
-<div class="columns-2">
-<font size="3">
+<font size="4">
 
-**Your Local Repository:**
-1. Create/checkout branch
-2. Edit files
-3. Stage changes
-4. Commit
-
-**Remote Repository (GitHub):**
-5. Push commits
-6. Create PR
-7. Code review
-8. Merge to main
-
-**Other Team Members:**
-- Pull latest changes
-- See full history
-- Can create new branches from main
+<table style="width: 100%;">
+  <tr>
+    <td style="width: 33%; vertical-align: top;">
+      <strong>Your Local Repository:</strong>
+      <ol>
+        <li>Create/checkout branch</li>
+        <li>Edit files</li>
+        <li>Stage changes</li>
+        <li>Commit</li>
+        <li>Push commits</li>
+      </ol>
+    </td>
+    <td style="width: 33%; vertical-align: top;">
+      <strong>Remote Repository (GitHub):</strong>
+      <ol start="6">
+        <li>Create PR</li>
+        <li>Review commits</li>
+        <li>Code review</li>
+        <li>Merge to main</li>
+      </ol>
+    </td>
+    <td style="width: 33%; vertical-align: top;">
+      <strong>Other Team Members:</strong>
+      <ul>
+        <li>Pull latest changes</li>
+        <li>See full history</li>
+        <li>Can create new branches</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 </font>
-</div>
+
+<img src="../docs/git_diagram.png" width="105%"/>
 
 ## Multiple Copies, One Source of Truth
 
-<div class="columns-2">
-<font size="4">
+<font size="5">
 
 Git enables a powerful collaboration pattern:
 
@@ -385,36 +400,13 @@ Git enables a powerful collaboration pattern:
 - **Synchronization:** Changes flow through branches and pull requests
 
 Your plant genomics team:
+
 - Dr. A works on cell type annotation locally
-- Dr. B works on trajectory analysis locally  
+- Dr. B works on trajectory analysis locally
 - Both push to the shared remote repository
 - Each has the full project history
 
 </font>
-</div>
-
-## Why Multiple Copies Matter
-
-<div class="columns-2">
-<font size="4">
-
-**Benefits of distributed repository model:**
-
-- **Offline work:** Edit and commit without internet
-- **Parallel development:** Team members work independently
-- **Backup:** Multiple copies prevent data loss
-- **Flexibility:** Easy to sync changes bidirectionally
-- **History tracking:** Every change is recorded and revertible
-
-**For your research:**
-
-- Compare analysis approaches across branches
-- Track which methods were applied to which samples
-- Revert problematic changes instantly
-- Document research decisions via commits and PRs
-
-</font>
-</div>
 
 ## Project Evolution: Viewing History
 
@@ -433,6 +425,7 @@ m0n1o2p Initial commit: metadata template and basic QC
 ```
 
 This allows you to:
+
 - Understand decisions made months ago
 - Trace back to when a bug was introduced
 - Recover old versions of files
@@ -440,7 +433,7 @@ This allows you to:
 
 ## Reverting Changes: The Safety Net
 
-<font size="4">
+<font size="3">
 
 Made a mistake? Git has you covered.
 
@@ -449,9 +442,14 @@ Made a mistake? Git has you covered.
 git revert a1b2c3d
 ```
 
+**Revert a range of commits (oldest to newest):**
+```
+git revert a1b2c3d^..e4f5g6h
+```
+
 **Go back to a previous version:**
 ```
-git checkout a1b2c3d -- src/analysis.R
+git restore --source a1b2c3d -- src/analysis.R
 ```
 
 **Undo uncommitted changes:**
