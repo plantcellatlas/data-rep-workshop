@@ -189,7 +189,285 @@ Other, similar tools include:
 
   * GitLab
   * BitBucket (Atlassian)
-  
+
+## GitHub Workflow: An Example
+
+Let's say you've identified an issue with your metadata documentation or want to add a new analysis script.
+
+A typical workflow:
+
+1. **Create an issue** - document the problem or task
+2. **Create a branch** - isolated space to make changes
+3. **Fetch and checkout** - download branch and switch to it locally
+4. **Edit files** - make your changes
+5. **Stage files** - prepare changes for commit
+6. **Commit** - save changes with a message
+7. **Push** - upload changes to remote
+8. **Create pull request** - propose changes
+9. **Merge** - integrate changes into main branch
+
+## Step 1: Create an Issue
+
+<div class="columns-2">
+<font size="4">
+On GitHub, create a new issue to:
+
+- Document bugs or problems
+- Propose new features or analyses
+- Assign tasks to team members
+- Discuss implementation before coding
+
+Issues can be:
+- Referenced in commits: `git commit -m "fixes #42"`
+- Automatically closed by pull requests
+- Labeled for organization (e.g., bug, enhancement, documentation)
+
+</font>
+</div>
+
+## Step 2: Create a Branch
+
+A **branch** is an independent line of development:
+
+```
+git branch feature/add-cell-qc
+```
+
+OR create and checkout in one command:
+
+```
+git checkout -b feature/add-cell-qc
+```
+
+Benefits:
+- Main branch stays stable while you work
+- Multiple team members can work on different features simultaneously
+- Easy to abandon changes if needed
+
+Branch naming conventions: `feature/name`, `bugfix/name`, `docs/name`
+
+## Step 3: Fetch & Checkout
+
+When collaborating, get the latest changes:
+
+```
+git fetch origin
+```
+
+This downloads remote branches without modifying your local work.
+
+Then checkout your branch:
+
+```
+git checkout feature/add-cell-qc
+```
+
+This switches your local repository to that branch.
+
+## Step 4: Edit Files
+
+Make your changes in your text editor or IDE:
+
+- Update metadata files
+- Modify analysis scripts
+- Add documentation
+
+Your changes are only in your local repository until you explicitly share them.
+
+## Step 5: Stage Files
+
+Prepare specific files for commit:
+
+```
+git add metadata/sample_metadata_sample.csv
+git add src/analysis.R
+```
+
+Stage all changes:
+
+```
+git add .
+```
+
+Check what's staged:
+
+```
+git status
+```
+
+## Step 6: Commit Changes
+
+Save your staged changes with a descriptive message:
+
+```
+git commit -m "Add cell QC thresholds to sample metadata"
+```
+
+Good commit messages:
+- Start with a verb: "Add", "Fix", "Update", "Remove"
+- Be specific about what changed
+- Keep it concise but informative
+
+Each commit is a snapshot of your project at that moment in time.
+
+## Step 7: Push to Remote
+
+Upload your commits to GitHub:
+
+```
+git push origin feature/add-cell-qc
+```
+
+This makes your work available to collaborators and GitHub.
+
+Multiple team members can now see your commits and provide feedback.
+
+## Step 8: Create a Pull Request
+
+On GitHub, create a **pull request** (PR) to:
+
+- Propose merging your branch into main
+- Describe your changes
+- Allow team members to review code
+- Discuss implementation details
+
+PR benefits:
+- Documentation of design decisions
+- Code review and quality control
+- Opportunity for feedback before merging
+
+## Step 9: Merge
+
+After review and approval, merge your branch into main:
+
+```
+git merge feature/add-cell-qc
+```
+
+Or merge via GitHub interface (recommended for team projects).
+
+Result: Your changes are now in the main branch, available to all collaborators.
+
+## The Complete Workflow Diagram
+
+<div class="columns-2">
+<font size="3">
+
+**Your Local Repository:**
+1. Create/checkout branch
+2. Edit files
+3. Stage changes
+4. Commit
+
+**Remote Repository (GitHub):**
+5. Push commits
+6. Create PR
+7. Code review
+8. Merge to main
+
+**Other Team Members:**
+- Pull latest changes
+- See full history
+- Can create new branches from main
+
+</font>
+</div>
+
+## Multiple Copies, One Source of Truth
+
+<div class="columns-2">
+<font size="4">
+
+Git enables a powerful collaboration pattern:
+
+- **Remote (GitHub):** Central repository everyone can access
+- **Local copies:** Each team member has a full copy on their machine
+- **Synchronization:** Changes flow through branches and pull requests
+
+Your plant genomics team:
+- Dr. A works on cell type annotation locally
+- Dr. B works on trajectory analysis locally  
+- Both push to the shared remote repository
+- Each has the full project history
+
+</font>
+</div>
+
+## Why Multiple Copies Matter
+
+<div class="columns-2">
+<font size="4">
+
+**Benefits of distributed repository model:**
+
+- **Offline work:** Edit and commit without internet
+- **Parallel development:** Team members work independently
+- **Backup:** Multiple copies prevent data loss
+- **Flexibility:** Easy to sync changes bidirectionally
+- **History tracking:** Every change is recorded and revertible
+
+**For your research:**
+
+- Compare analysis approaches across branches
+- Track which methods were applied to which samples
+- Revert problematic changes instantly
+- Document research decisions via commits and PRs
+
+</font>
+</div>
+
+## Project Evolution: Viewing History
+
+Git maintains a complete record of your project:
+
+```
+git log --oneline
+```
+
+Example output:
+```
+a1b2c3d Fix filtering thresholds in QC script (fixes #24)
+e4f5g6h Add cell type annotations from manual review
+i7j8k9l Update sample metadata with dissociation details
+m0n1o2p Initial commit: metadata template and basic QC
+```
+
+This allows you to:
+- Understand decisions made months ago
+- Trace back to when a bug was introduced
+- Recover old versions of files
+- Document the evolution of your analysis
+
+## Reverting Changes: The Safety Net
+
+<font size="4">
+
+Made a mistake? Git has you covered.
+
+**Revert a recent commit:**
+```
+git revert a1b2c3d
+```
+
+**Go back to a previous version:**
+```
+git checkout a1b2c3d -- src/analysis.R
+```
+
+**Undo uncommitted changes:**
+```
+git restore src/analysis.R
+```
+
+**View what changed in a specific commit:**
+```
+git show a1b2c3d
+```
+
+This safety net encourages experimentation and collaboration without fear of losing work.
+
+</font>
+
 ## Live Demonstration!
 
 Having just generated a single-cell dataset, we'd like to start processing. To
