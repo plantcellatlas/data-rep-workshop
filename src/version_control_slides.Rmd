@@ -1,7 +1,7 @@
 ---
 title: 'PCA Data Reproducibility Workshop: Version Control'
 author: "Benjamin Cole"
-date: "2024-11-19"
+date: "2026-02-09"
 output: 
   ioslides_presentation:
     widescreen: true
@@ -15,6 +15,23 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+## Workshop overview
+
+<font size="4">
+Welcome! This workshop series will be focused on data reproducibility!
+
+- Day 1 (today): Metadata and version control
+- Day 2 (tomorrow): Single-cell preprocessing and containerization
+- Day 3 (Wednesday): Single-cell standard analysis and jupyter
+
+Each session will consist of a 30 minute presentation followed by a 60-90 minute live demonstration.
+
+Feel free to follow along, or refer to the recording after the conclusion of the workshop.
+
+There will be a Q&A period after the live demo (time permitting), but feel free to enter questions into the Q&A feature in Zoom.
+
+Can also enter questions into a padlet: https://padlet.com/murra320/data-reproducibility-workshop-6wghd1yku72siz5z
+</font>
 
 ## Outline
 In this workshop, we will:
@@ -70,7 +87,7 @@ Data reproducibility starts with *metadata* -- documenting how your
 experimental samples were generated.
 
 ## What is metadata?
-<font size="5">
+<font size="4">
 
 Metadata is data used to describe other data.
 
@@ -83,8 +100,10 @@ Metadata is data used to describe other data.
 
 Several metadata schemas exist for single-cell
 
-- COPO (singlecellschemas.org)
-- Annotare
+- COPO (https://singlecellschemas.org)
+- Annotare (https://www.ebi.ac.uk/fg/annotare)
+
+Sample: https://github.com/plantcellatlas/data-rep-workshop/blob/main/docs/pca_datarepro_manifest_terms.xlsx
 
 </font>
 
