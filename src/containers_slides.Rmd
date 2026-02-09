@@ -1,0 +1,158 @@
+---
+title: 'PCA Data Reproducibility Workshop: Containers'
+author: "Andrew Farmer"
+date: "2026-02-10"
+output:
+  ioslides_presentation:
+    incremental: true
+    widescreen: true
+
+---
+
+<style>
+.forceBreak { -webkit-column-break-after: always; break-after: column; }
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Outline
+In this workshop, we will:
+
+- Introduce containers and explain why they're useful in the context of reproducible data science
+- Introduce specific container technologies: Docker and Apptainer/Singularity
+- Demonstrate some basic single-cell analyses using containers, both directly and through a workflow engine (nextflow) using containers behind the scenes to provision complex sets of software dependencies
+
+- "It is by instruments and helps that the work is done, which are as much wanted for the understanding as for the hand." - Francis Bacon, Novum Organum
+
+## What are containers?{.smaller}
+<div class="columns-2">
+"Ten simple rules for writing Dockerfiles for reproducible data science" 
+<img src="https://journals.plos.org/ploscompbiol/article/figure/image?size=large&id=10.1371/journal.pcbi.1008316.g002" width=400>
+https://doi.org/10.1371/journal.pcbi.1008316
+
+- "A container is a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another." https://www.docker.com/resources/what-container/ 
+- Originally created to help address the "worked on my machine" fallacy in software development BUT also applies to complex software-enabled data analyses
+- Analogy with growth chambers for standardizing environments: your code's genotype may be perfectly replicable (e.g. git clone) but that doesn't mean the phenotype will be the same everywhere (even if you feed it the same data!)
+- "environment" here refers to anything outside the code of an application that it can interact with at runtime
+</div>
+## What are containers? (cont.){.smaller}
+<div class="columns-2">
+"Ten simple rules for writing Dockerfiles for reproducible data science" 
+<img src="https://journals.plos.org/ploscompbiol/article/figure/image?size=large&id=10.1371/journal.pcbi.1008316.g002" width=400>
+https://doi.org/10.1371/journal.pcbi.1008316
+
+- Isolation of containers from each other allows potentially conflicting versions to coexist in parallel worlds on the same host (e.g. Seurat v4 vs v5 and compatibility with other tools affected by differences in data representation between the two).
+- Although "containers" is used to refer broadly to this type of lightweight virtualization strategy, the terms "image" and "container" have specific and subtly different usages within the context of the technology
+  - An "image" is like the file representing a program that can be run, including not only the program code but also needed dependencies
+  - A "container" is like an instance of the program in process of being run in the environment provided by the image (containers can also represent states pre- and post- execution)
+</div>
+
+## What aspects of a program's environment might impact its reproducibility? (your turn to think)
+- host operating system
+- software versions, dependencies
+- user environment (PATH, LD_LIBRARY_PATH, R_LIBS, alias, etc.)
+- access to filesystems, internet connectivity
+- availability of specialized hardware like GPUs
+- other processes utilizing system resources (important for performance benchmarking)
+- **different containerization frameworks take different approaches to how much isolation from the host system is provided by default**
+
+<!--
+## The worst form of non-reproducibility is when your code won't run!
+<div class="columns-2">
+<img src=http://www.agile-process.org/images/BoehmCurve.GIF alt="drawing" width="400"/>
+- https://en.wikipedia.org/wiki/Software_rot: "the degradation, deterioration, or loss of the use or performance of software over time...  Environment change: When changes occur in the program's environment, particularly changes which the designer of the program did not anticipate, the software may no longer operate as originally intended."
+</div>
+-->
+
+## The worst form of non-reproducibility is when your code won't run!{.smaller}
+<div class="columns-2">
+<img src=https://miro.medium.com/0*7ezJOtYUkI5zyqWU.png alt="drawing" width="400"/>
+
+https://en.wikipedia.org/wiki/Dependency_hell: "colloquial term for the frustration of some software users who have installed software packages which have dependencies on specific versions of other software packages... Another approach to avoiding dependency issues is to deploy applications as a software appliance. A software appliance encapsulates dependencies in a pre-integrated self-contained unit such that users no longer have to worry about resolving software dependencies. Instead the burden is shifted to developers of the software appliance. **Containers and their images (such as those provided by Docker and Docker Hub) can be seen as an implementation of software appliances.**"
+</div>
+
+## The worst form of non-reproducibility is when your code won't run! (cont'd.)
+<div class="columns-2">
+<img src=https://miro.medium.com/0*7ezJOtYUkI5zyqWU.png alt="drawing" width="400"/>
+
+"Works on my machine is a terrible standard for science. We've all been there: you find a paper from 2 years ago, clone the repo, and spend the next 4 hours fighting dependency hell because they use some obscure library that requires a specific numpy version pre v2, or because they didn't include a requirements file at all...." 
+
+[linkedin-anmorgunov](https://www.linkedin.com/posts/anmorgunov_works-on-my-machine-is-a-terrible-standard-activity-7421555243215216640-SH1D)
+</div>
+
+## Illustrative anecdote: BUSCO problem
+- two essentially identical servers with a shared NFS filesystem, but separate user home directories
+- the same simple bash script invoking a *containerized* BUSCO image
+
+- ```singularity run docker://ezlabgva/busco:v5.4.3_cv1 busco```
+
+- works as expected on server 1, while over on server 2:  
+ **C extension: None not built. If you want to import pandas from the source directory, you may need to run 'python setup.py build_ext' to build the C extensions first.
+     There was a problem installing BUSCO or importing one of its dependencies...  **
+- What the ?!!?&^%...? (I wouldn't expect anyone to know what the issue here was, but see if you can make a guess!)
+
+## Illustrative anecdote: BUSCO solution
+
+- singularity provides acccess to user home directory by default, which is convenient, but in this case allowed containerized python to try to use a library under ${HOME}/.local on server 2
+- solution: <br>
+```singularity run **--no-mount=home** docker://ezlabgva/busco:v5.4.3_cv1 busco```
+- although it initially seemed like containers had failed to live up to their promise, the problem turned out to be environment leakage and would have been harder to address without containers
+- judicious use of "bind mounts" will be an important way for you to allow containerized code access to your data
+
+## What about conda/modules/virtual environments?
+- There are several other approaches to provisioning software and managing the environment to provide isolation
+- In some respects they might be considered simpler to use than containers, but that also limits their applicability to certain types of problems
+- We won't be presenting these but being familiar with them as alternative tools for tackling some of the same issues is worthwhile
+
+## Using containers with Docker
+<div class="columns-2">
+
+<img src="https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F7298dbklbkky66pmpu4d.png" width=400>
+
+- Docker engine runs as a "daemon" and manages access to images and containers spawned from them
+<!--- "An image is a read-only template with instructions for creating a <Docker> container. Often, an image is based on another image, with some additional customization." -->
+- Remote image registries can be searched for pre-built images, e.g. https://hub.docker.com/ https://quay.io/
+<br><br><br>
+- Versioned build files facilitate reproducibility of images (code+environment)<br>
+```FROM r-base                   
+RUN R -e 'install.packages("Seurat")'    
+...```
+- Dockerfiles use a "layering" approach to facilitate caching of build components; FROM indicates the base image onto which you'll add your application-specific layers (RUN, COPY, ...)
+- official base images for many language/frameworks (e.g. Python/R) at the registries
+<!--- GitHub maintains a container registry that can be incorporated into software builds using Github Actions-->
+
+</div>
+
+## Containers on High Performance Computing (HPC) systems: Apptainer/Singularity
+<div class="columns-2">
+<img src="https://daic.tudelft.nl/tutorials/apptainer/images/apptainer-daic-workflow.png" width=400>
+
+- HPC clusters are typically multi-user managed by dedicated system administrators
+- Often, Docker will not be enabled on such systems due to security issues with some privileged operations <!--(this is changing, with new approaches to "rootless" use)-->
+<br>
+<br>
+<br>
+- Apptainer/Singularity was developed specifically for running in such environments, without use of a daemon process
+- Images are stored as files and can easily be copied from one system to another; it's simple to pull images stored in Docker registries for use with Apptainer
+- Alternatively, images can be built from definition files
+</div>
+
+## Nextflow and containers{.smaller}
+https://nf-co.re/scrnaseq/4.0.0/
+<img src=https://raw.githubusercontent.com/nf-core/scrnaseq/4.0.0/docs/images/scrnaseq_pipeline_V3.0-metro_clean.png alt="drawing" width="800"/>
+
+- A huge benefit to packaging software in ways that can be deployed auto-magically is the ability to construct complex workflow whose dependencies can be managed behind the scenes as part of the runtime
+
+  
+## Live Demonstration!
+
+Now that we know some high-level things about containers, let's get started using them!
+
+- First, using the standard "hello world" to get a basic feel for how they work, using Docker on a laptop and Singularity on an HPC server.
+
+- Then, we'll use the nextflow-based pipeline (nf-core/scrnaseq) which will use containers behind the scenes on our behalf to run some basic single-cell analytics, using a down-sampled version of the dataset from the scenario of session 1.
+
+- Finally, we'll do some add-on analysis using both the images pulled onto our system by the workflow as well as an image we built ourselves.
