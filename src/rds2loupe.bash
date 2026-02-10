@@ -17,6 +17,8 @@ path_to_input=$(readlink -f $(dirname $input))
 path_to_output=$(readlink -f $(dirname $output))
 
 
+#unlike in the other scripts, here we are invoking docker from within the script; 
+#what are the advantages/disadvantages of the two approaches? 
 docker run -v${path_to_input}:${path_to_input} -v${path_to_output}:${path_to_output} louper R -e 'library(loupeR);
 library(Seurat);
 rds<-readRDS("'$path_to_input/$input'"); 
