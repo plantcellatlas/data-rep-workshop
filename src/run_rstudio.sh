@@ -8,15 +8,19 @@ while getopts ":t:s:" opt; do
   case $opt in
     t) renv="$OPTARG"
     ;;
-    c) service="$OPTARG"
+    s) service="$OPTARG"
     ;;
   esac
 
 done
 
+echo "$service"
+
 if [ $service == "docker" ]; then
 	docker run --rm -p 8787:8787 --mount type=bind,source="$(pwd)"/,target=/home/rstudio/ $renv 
 elif [ $service == "apptainer" ]; then
+	renv="docker://${renv}"
+
 	TMPDIR=~/rstudio-tmp
 	rm -Rf $TMPDIR
 	
